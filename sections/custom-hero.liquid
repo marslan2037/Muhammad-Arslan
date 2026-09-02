@@ -69,7 +69,14 @@
           }}
         </picture>
       {% else %}
-        {{ 'hero-apparel-1' | placeholder_svg_tag: 'custom-hero__image custom-hero__image--placeholder' }}
+        <img
+          src="{{ 'group-1000008197.svg' | asset_url }}"
+          class="custom-hero__image"
+          width="1440"
+          height="780"
+          alt="{{ section.settings.heading | escape }}"
+          fetchpriority="{{ fetch_priority }}"
+        >
       {% endif %}
       <div class="custom-hero__overlay"></div>
     </div>
@@ -94,12 +101,12 @@
               href="{{ section.settings.button_link }}"
               class="custom-hero__button"
             >
-              <span>{{ section.settings.button_label }}</span>
+              <span class="custom-hero__button-text">{{ section.settings.button_label }}</span>
               <span aria-hidden="true" class="custom-hero__button-arrow">→</span>
             </a>
           {% else %}
             <span class="custom-hero__button custom-hero__button--disabled">
-              <span>{{ section.settings.button_label }}</span>
+              <span class="custom-hero__button-text">{{ section.settings.button_label }}</span>
               <span aria-hidden="true" class="custom-hero__button-arrow">→</span>
             </span>
           {% endif %}
@@ -214,11 +221,14 @@
   }
 
   #custom-hero-{{ section.id }} .custom-hero__button {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 18px;
     min-height: 54px;
     padding: 0 26px;
+    overflow: hidden;
+    border: 0;
     background: var(--hero-button-bg);
     color: var(--hero-button-text);
     text-decoration: none;
@@ -227,16 +237,41 @@
     font-size: 0.875rem;
     line-height: 1;
     letter-spacing: 0.08em;
-    transition:
-      background-color 0.25s ease,
-      color 0.25s ease,
-      transform 0.25s ease;
+    cursor: pointer;
+    isolation: isolate;
   }
 
-  #custom-hero-{{ section.id }} .custom-hero__button:hover {
+  #custom-hero-{{ section.id }} .custom-hero__button::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    content: '';
     background: var(--hero-button-hover-bg);
+    transform: translateX(-100%);
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  #custom-hero-{{ section.id }} .custom-hero__button:hover::before {
+    transform: translateX(0);
+  }
+
+  #custom-hero-{{ section.id }} .custom-hero__button-text,
+  #custom-hero-{{ section.id }} .custom-hero__button-arrow {
+    position: relative;
+    z-index: 1;
+    transition:
+      color 0.25s ease,
+      transform 0.35s ease;
+  }
+
+  #custom-hero-{{ section.id }} .custom-hero__button-text,
+  #custom-hero-{{ section.id }} .custom-hero__button-arrow {
+    color: var(--hero-button-text);
+  }
+
+  #custom-hero-{{ section.id }} .custom-hero__button:hover .custom-hero__button-text,
+  #custom-hero-{{ section.id }} .custom-hero__button:hover .custom-hero__button-arrow {
     color: var(--hero-button-hover-text);
-    transform: translateY(-1px);
   }
 
   #custom-hero-{{ section.id }} .custom-hero__button--disabled {
@@ -246,6 +281,10 @@
   #custom-hero-{{ section.id }} .custom-hero__button-arrow {
     font-size: 1.25rem;
     line-height: 1;
+  }
+
+  #custom-hero-{{ section.id }} .custom-hero__button:hover .custom-hero__button-arrow {
+    transform: translateX(3px);
   }
 
   #custom-hero-{{ section.id }} .custom-hero__footer-note {

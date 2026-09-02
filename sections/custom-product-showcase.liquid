@@ -1,0 +1,392 @@
+{% liquid
+  assign collection = section.settings.collection
+  assign product_limit = section.settings.product_count
+%}
+
+<section id="custom-product-showcase-{{ section.id }}" class="custom-product-showcase">
+  <div class="custom-product-showcase__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="custom-product-showcase__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="custom-product-showcase__grid">
+      {% if collection != blank and collection.products_count > 0 %}
+        {% for product in collection.products limit: product_limit %}
+          {% liquid
+            assign image = product.featured_media.preview_image
+            assign first_variant = product.selected_or_first_available_variant
+            assign color_option = blank
+            for option in product.options_with_values
+              assign option_name = option.name | downcase
+              if option_name contains 'color' or option_name contains 'colour'
+                assign color_option = option
+                break
+              endif
+            endfor
+          %}
+          <article class="custom-product-showcase__card">
+            <div class="custom-product-showcase__media">
+              {% if image != blank %}
+                {{
+                  image
+                  | image_url: width: 1000
+                  | image_tag:
+                    widths: '360, 540, 720, 1000',
+                    sizes: '(min-width: 750px) 33vw, 100vw',
+                    loading: 'lazy',
+                    class: 'custom-product-showcase__image',
+                    alt: image.alt | default: product.title
+                }}
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag: 'custom-product-showcase__image custom-product-showcase__placeholder' }}
+              {% endif %}
+
+              <button
+                type="button"
+                class="custom-product-showcase__plus"
+                aria-label="Quick add {{ product.title | escape }}"
+                data-showcase-open
+                data-template-id="showcase-product-{{ section.id }}-{{ product.id }}"
+              >
+                <span aria-hidden="true">+</span>
+              </button>
+            </div>
+
+            <template id="showcase-product-{{ section.id }}-{{ product.id }}">
+              <div
+                class="custom-product-showcase__modal-product"
+                data-showcase-product
+                data-variants="{{ product.variants | json | escape }}"
+                data-currency="{{ shop.currency }}"
+              >
+                <div class="custom-product-showcase__modal-media">
+                  {% if image != blank %}
+                    {{
+                      image
+                      | image_url: width: 500
+                      | image_tag:
+                        widths: '220, 360, 500',
+                        sizes: '132px',
+                        loading: 'lazy',
+                        alt: image.alt | default: product.title
+                    }}
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag }}
+                  {% endif %}
+                </div>
+                <div class="custom-product-showcase__modal-summary">
+                  <h3>{{ product.title }}</h3>
+                  <p class="custom-product-showcase__price" data-showcase-price>{{ first_variant.price | money }}</p>
+                  {% if product.description != blank %}
+                    <div class="custom-product-showcase__description">{{ product.description | strip_html | truncate: 150 }}</div>
+                  {% endif %}
+                </div>
+
+                <form class="custom-product-showcase__form" data-showcase-form>
+                  <input type="hidden" name="id" value="{{ first_variant.id }}" data-showcase-variant-id>
+                  <input type="hidden" name="quantity" value="1">
+
+                  {% if color_option != blank %}
+                  <fieldset class="custom-product-showcase__options custom-product-showcase__options--colors">
+                    <legend>{{ color_option.name }}</legend>
+                    <div class="custom-product-showcase__color-values">
+                      {% assign color_option_index = color_option.position | minus: 1 %}
+                      {% for value in color_option.values %}
+                        <button
+                          type="button"
+                          class="custom-product-showcase__color-value{% if value == first_variant.options[color_option_index] %} is-selected{% endif %}"
+                          data-showcase-option="{{ color_option_index }}"
+                          data-showcase-value="{{ value | escape }}"
+                          aria-pressed="{% if value == first_variant.options[color_option_index] %}true{% else %}false{% endif %}"
+                          >
+                            {{ value }}
+                          </button>
+                        {% endfor %}
+                      </div>
+                    </fieldset>
+                  {% endif %}
+
+                  {% for option in product.options_with_values %}
+                  {% assign option_name = option.name | downcase %}
+                  {% unless option_name contains 'color' or option_name contains 'colour' %}
+                      {% assign option_index = option.position | minus: 1 %}
+                      <label class="custom-product-showcase__select-label">
+                        <span>{{ option.name }}</span>
+                        <span class="custom-product-showcase__select-wrap">
+                          <select data-showcase-select data-showcase-option="{{ option_index }}">
+                            {% for value in option.values %}
+                              <option value="{{ value | escape }}"{% if value == first_variant.options[option_index] %} selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                          </select>
+                          <span aria-hidden="true">⌄</span>
+                        </span>
+                      </label>
+                    {% endunless %}
+                  {% endfor %}
+
+                  <p class="custom-product-showcase__status" data-showcase-status aria-live="polite"></p>
+                  <button type="submit" class="custom-product-showcase__add-button" data-showcase-submit{% unless first_variant.available %} disabled{% endunless %}>
+                    <span class="custom-product-showcase__add-button-text">{% if first_variant.available %}ADD TO CART{% else %}SOLD OUT{% endif %}</span>
+                    <span aria-hidden="true" class="custom-product-showcase__add-button-arrow">→</span>
+                  </button>
+                </form>
+              </div>
+            </template>
+          </article>
+        {% endfor %}
+      {% else %}
+        {% for i in (1..6) %}
+          <article class="custom-product-showcase__card">
+            <div class="custom-product-showcase__media">
+              {{ 'product-1' | placeholder_svg_tag: 'custom-product-showcase__image custom-product-showcase__placeholder' }}
+            </div>
+          </article>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <dialog class="custom-product-showcase__dialog" data-showcase-dialog aria-label="Product quick add">
+    <button type="button" class="custom-product-showcase__close" aria-label="Close" data-showcase-close>×</button>
+    <div class="custom-product-showcase__dialog-content" data-showcase-content></div>
+  </dialog>
+</section>
+
+<style>
+  #custom-product-showcase-{{ section.id }} {
+    --showcase-bg: {{ section.settings.background_color }};
+    --showcase-text: {{ section.settings.text_color }};
+    --showcase-gap: {{ section.settings.grid_gap }}px;
+    --showcase-button-hover: {{ section.settings.button_hover_color }};
+    background: var(--showcase-bg);
+    color: var(--showcase-text);
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+
+  #custom-product-showcase-{{ section.id }} *,
+  #custom-product-showcase-{{ section.id }} *::before,
+  #custom-product-showcase-{{ section.id }} *::after { box-sizing: border-box; }
+
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__inner {
+    width: min(100%, {{ section.settings.max_width }}px);
+    margin: 0 auto;
+    padding: 0 {{ section.settings.side_padding }}px;
+  }
+
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__heading {
+    margin: 0 0 20px;
+    color: var(--showcase-text);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 3vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1.05;
+  }
+
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--showcase-gap);
+  }
+
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__media {
+    position: relative;
+    aspect-ratio: 1 / 1.02;
+    overflow: hidden;
+    background: #ececec;
+  }
+
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__image,
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__plus {
+    position: absolute;
+    z-index: 1;
+    top: 52%;
+    left: 62%;
+    display: grid;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    color: #111;
+    font: 400 22px/1 Arial, sans-serif;
+    cursor: pointer;
+    transition: transform .2s ease, background-color .2s ease;
+  }
+
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__card:nth-child(2) .custom-product-showcase__plus { top: 49%; left: 82%; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__card:nth-child(3) .custom-product-showcase__plus { top: 18%; left: 61%; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__card:nth-child(4) .custom-product-showcase__plus { top: 18%; left: 70%; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__card:nth-child(5) .custom-product-showcase__plus { top: 26%; left: 49%; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__card:nth-child(6) .custom-product-showcase__plus { top: 38%; left: 74%; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__plus:hover { background: var(--showcase-button-hover); transform: scale(1.12); }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__plus:focus-visible { outline: 2px solid #111; outline-offset: 3px; }
+
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__dialog {
+    width: min(92vw, 390px);
+    max-height: min(90vh, 650px);
+    padding: 26px;
+    overflow: auto;
+    border: 2px solid #d6d6d6;
+    background: #fff;
+    color: #111;
+  }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__dialog::backdrop { background: rgb(0 0 0 / 38%); }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__close { position: absolute; top: 8px; right: 14px; border: 0; background: transparent; font: 300 30px/1 Arial, sans-serif; cursor: pointer; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__modal-product { display: grid; grid-template-columns: 132px 1fr; gap: 12px 16px; padding-top: 8px; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__modal-media { height: 154px; background: #efefef; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__modal-media img, #custom-product-showcase-{{ section.id }} .custom-product-showcase__modal-media svg { width: 100%; height: 100%; object-fit: cover; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__modal-summary h3 { margin: 12px 0 14px; font: 400 1.25rem/1.1 Georgia, 'Times New Roman', serif; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__price { margin: 0 0 14px; font: 400 1.15rem/1 Arial, sans-serif; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__description { font: 400 .9rem/1.05 Arial, sans-serif; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__form { grid-column: 1 / -1; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__options, #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-label { display: block; margin: 0 0 14px; padding: 0; border: 0; font: 400 .9rem/1 Arial, sans-serif; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__options legend, #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-label > span:first-child { display: block; margin-bottom: 8px; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-values { display: flex; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value { flex: 1; min-height: 44px; margin: 0; border: 1px solid #999; background: #fff; color: #111; font: 400 1rem/1 Arial, sans-serif; cursor: pointer; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value + .custom-product-showcase__color-value { border-left: 0; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value.is-selected { border: 2px solid #111; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap { position: relative; display: block; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap select { width: 100%; min-height: 44px; padding: 0 38px 0 14px; appearance: none; border: 1px solid #777; border-radius: 0; background: #fff; color: #111; font: 400 1rem/1 Arial, sans-serif; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap > span { position: absolute; top: 50%; right: 18px; transform: translateY(-58%); font: 400 25px/1 Arial, sans-serif; pointer-events: none; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__status { min-height: 1.2em; margin: 0 0 8px; color: #b00020; font: 400 .8rem/1.2 Arial, sans-serif; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button { position: relative; display: flex; width: 100%; min-height: 50px; align-items: center; justify-content: center; gap: 42px; overflow: hidden; border: 0; background: #000; color: #fff; font: 400 1rem/1 Arial, sans-serif; cursor: pointer; isolation: isolate; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button::before { position: absolute; z-index: -1; inset: 0; content: ''; background: var(--showcase-button-hover); transform: translateX(-100%); transition: transform .45s cubic-bezier(.65, 0, .35, 1); }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:hover::before { transform: translateX(0); }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button-text, #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button-arrow { position: relative; z-index: 1; transition: color .25s ease, transform .35s ease; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:hover { color: #111; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:hover .custom-product-showcase__add-button-arrow { transform: translateX(3px); }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:disabled { cursor: not-allowed; opacity: .55; }
+
+  @media screen and (max-width: 749px) {
+    #custom-product-showcase-{{ section.id }} { padding-top: {{ section.settings.mobile_padding_top }}px; padding-bottom: {{ section.settings.mobile_padding_bottom }}px; }
+    #custom-product-showcase-{{ section.id }} .custom-product-showcase__inner { padding: 0 16px; }
+    #custom-product-showcase-{{ section.id }} .custom-product-showcase__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    #custom-product-showcase-{{ section.id }} .custom-product-showcase__plus { width: 22px; height: 22px; font-size: 20px; }
+  }
+</style>
+
+<script>
+  (() => {
+    const section = document.getElementById('custom-product-showcase-{{ section.id }}');
+    if (!section || section.dataset.showcaseReady) return;
+    section.dataset.showcaseReady = 'true';
+
+    const dialog = section.querySelector('[data-showcase-dialog]');
+    const content = section.querySelector('[data-showcase-content]');
+    const close = () => {
+      dialog.close();
+      content.replaceChildren();
+    };
+    const formatMoney = (cents, currency) => new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency }).format(cents / 100);
+
+    const updateVariant = (panel) => {
+      const variants = JSON.parse(panel.dataset.variants || '[]');
+      const selectedOptions = Array.from(panel.querySelectorAll('[data-showcase-select]')).reduce((options, select) => {
+        options[Number(select.dataset.showcaseOption)] = select.value;
+        return options;
+      }, []);
+      panel.querySelectorAll('.custom-product-showcase__color-value.is-selected').forEach((button) => {
+        selectedOptions[Number(button.dataset.showcaseOption)] = button.dataset.showcaseValue;
+      });
+      const variant = variants.find((item) => item.options.every((value, index) => value === selectedOptions[index]));
+      const id = panel.querySelector('[data-showcase-variant-id]');
+      const price = panel.querySelector('[data-showcase-price]');
+      const submit = panel.querySelector('[data-showcase-submit]');
+      const status = panel.querySelector('[data-showcase-status]');
+      if (!variant) {
+        id.value = '';
+        submit.disabled = true;
+        submit.querySelector('.custom-product-showcase__add-button-text').textContent = 'UNAVAILABLE';
+        status.textContent = 'This option combination is unavailable.';
+        return;
+      }
+      id.value = variant.id;
+      price.textContent = formatMoney(variant.price, panel.dataset.currency);
+      submit.disabled = !variant.available;
+      submit.querySelector('.custom-product-showcase__add-button-text').textContent = variant.available ? 'ADD TO CART' : 'SOLD OUT';
+      status.textContent = '';
+    };
+
+    section.addEventListener('click', (event) => {
+      const openButton = event.target.closest('[data-showcase-open]');
+      if (openButton) {
+        const template = document.getElementById(openButton.dataset.templateId);
+        if (!template) return;
+        content.replaceChildren(template.content.cloneNode(true));
+        dialog.showModal();
+        return;
+      }
+      if (event.target.closest('[data-showcase-close]') || event.target === dialog) close();
+      const colorButton = event.target.closest('.custom-product-showcase__color-value');
+      if (colorButton) {
+        const panel = colorButton.closest('[data-showcase-product]');
+        const index = colorButton.dataset.showcaseOption;
+        panel.querySelectorAll(`[data-showcase-option="${index}"]`).forEach((button) => {
+          button.classList.toggle('is-selected', button === colorButton);
+          button.setAttribute('aria-pressed', button === colorButton ? 'true' : 'false');
+        });
+        updateVariant(panel);
+      }
+    });
+
+    section.addEventListener('change', (event) => {
+      if (event.target.matches('[data-showcase-select]')) updateVariant(event.target.closest('[data-showcase-product]'));
+    });
+
+    section.addEventListener('submit', async (event) => {
+      const form = event.target.closest('[data-showcase-form]');
+      if (!form) return;
+      event.preventDefault();
+      const panel = form.closest('[data-showcase-product]');
+      const submit = form.querySelector('[data-showcase-submit]');
+      const status = form.querySelector('[data-showcase-status]');
+      submit.disabled = true;
+      status.textContent = '';
+      try {
+        const response = await fetch('/cart/add.js', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.description || 'Unable to add this item to your cart.');
+        status.style.color = '#166534';
+        status.textContent = 'Added to cart.';
+        submit.querySelector('.custom-product-showcase__add-button-text').textContent = 'ADDED TO CART';
+        document.querySelector('theme-drawer#cart-drawer')?.open?.();
+        document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item: result } }));
+      } catch (error) {
+        status.style.color = '#b00020';
+        status.textContent = error.message;
+        updateVariant(panel);
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Custom product showcase",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Tisso vision in the wild" },
+    { "type": "range", "id": "product_count", "label": "Products to show", "min": 3, "max": 12, "step": 1, "default": 6 },
+    { "type": "range", "id": "max_width", "label": "Content width", "min": 900, "max": 1800, "step": 20, "unit": "px", "default": 1400 },
+    { "type": "range", "id": "side_padding", "label": "Desktop side padding", "min": 16, "max": 80, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "grid_gap", "label": "Grid gap", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "mobile_padding_top", "label": "Mobile top padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "mobile_padding_bottom", "label": "Mobile bottom padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40 },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#111111" },
+    { "type": "color", "id": "button_hover_color", "label": "Plus and button hover", "default": "#d8e400" }
+  ],
+  "presets": [{ "name": "Custom product showcase" }]
+}
+{% endschema %}
