@@ -5,6 +5,10 @@
   assign button_url = section.settings.button_url
 %}
 
+{% style %}
+  {{ section.settings.message_font | font_face: font_display: 'swap' }}
+{% endstyle %}
+
 <section
   id="tisso-header-{{ section.id }}"
   class="tisso-header"
@@ -15,6 +19,7 @@
 
     --header-bg: {{ section.settings.header_bg }};
     --text-color: {{ section.settings.text_color }};
+    --message-font: {{ section.settings.message_font.family }}, sans-serif;
 
     --button-bg: {{ section.settings.button_bg }};
     --button-text: {{ section.settings.button_text_color }};
@@ -42,8 +47,14 @@
           }}
         </a>
       {% else %}
-        <a href="{{ routes.root_url }}" class="tisso-header__text-logo">
-          TISSO VISION
+        <a href="{{ routes.root_url }}" class="tisso-header__logo-link">
+          <img
+            src="{{ 'custom-logo.svg' | asset_url }}"
+            class="tisso-header__logo-image"
+            width="{{ section.settings.logo_width }}"
+            height="40"
+            alt="{{ shop.name | escape }}"
+          >
         </a>
       {% endif %}
     </div>
@@ -154,9 +165,9 @@
   ========================= */
 
   #tisso-header-{{ section.id }} .tisso-header__message {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--message-font);
 
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1.2;
     font-weight: 400;
 
@@ -184,7 +195,7 @@
     position: relative;
 
     width: var(--button-width);
-    height: 32px;
+    height: 44px;
 
     display: flex;
     align-items: center;
@@ -301,7 +312,7 @@
     }
 
     #tisso-header-{{ section.id }} .tisso-header__message {
-      font-size: 10px;
+      font-size: 16px;
       white-space: normal;
       line-height: 1.2;
     }
@@ -318,7 +329,7 @@
     #tisso-header-{{ section.id }} .tisso-header__button {
       width: auto;
       min-width: 110px;
-      height: 32px;
+      height: 44px;
 
       padding-left: 12px;
       padding-right: 10px;
@@ -362,6 +373,12 @@
       "label": "Message",
       "default": "Find the ideal gift for your loved ones."
     },
+    {
+      "type": "font_picker",
+      "id": "message_font",
+      "label": "Message font",
+      "default": "jost_n4"
+    },
 
     {
       "type": "header",
@@ -384,9 +401,9 @@
       "label": "Button width",
       "min": 100,
       "max": 250,
-      "step": 5,
+      "step": 1,
       "unit": "px",
-      "default": 145
+      "default": 207
     },
 
     {
@@ -401,7 +418,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 50
+      "default": 64
     },
     {
       "type": "range",

@@ -181,9 +181,11 @@
         {{ content_for_layout }}
       </main>
 
-      <footer>
-        {% sections 'footer-group' %}
-      </footer>
+      {% unless request.page_type == 'index' %}
+        <footer>
+          {% sections 'footer-group' %}
+        </footer>
+      {% endunless %}
     </div>
 
     {% render 'cart-drawer', render_wrapper: true %}
