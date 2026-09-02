@@ -3,10 +3,6 @@
   assign product_limit = section.settings.product_count
 %}
 
-{% style %}
-  {{ section.settings.heading_font | font_face: font_display: 'swap' }}
-{% endstyle %}
-
 <section id="custom-product-showcase-{{ section.id }}" class="custom-product-showcase">
   <div class="custom-product-showcase__inner">
     {% if section.settings.heading != blank %}
@@ -163,7 +159,7 @@
     --showcase-gap: {{ section.settings.grid_gap }}px;
     --showcase-button-hover: {{ section.settings.button_hover_color }};
     --showcase-heading-size: {{ section.settings.heading_size }}px;
-    --showcase-heading-font: {{ section.settings.heading_font.family }}, serif;
+    --showcase-heading-font: 'Lustria', Georgia, 'Times New Roman', serif;
     background: var(--showcase-bg);
     color: var(--showcase-text);
     padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
@@ -381,7 +377,6 @@
   "settings": [
     { "type": "collection", "id": "collection", "label": "Collection" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Tisso vision in the wild" },
-    { "type": "font_picker", "id": "heading_font", "label": "Heading font", "default": "lustria_n4" },
     { "type": "range", "id": "heading_size", "label": "Heading size", "min": 20, "max": 72, "step": 1, "unit": "px", "default": 36 },
     { "type": "range", "id": "product_count", "label": "Products to show", "min": 3, "max": 12, "step": 1, "default": 6 },
     { "type": "range", "id": "max_width", "label": "Content width", "min": 900, "max": 1800, "step": 20, "unit": "px", "default": 1400 },
