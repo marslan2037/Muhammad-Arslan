@@ -18,6 +18,13 @@
   class="custom-hero-section"
   style="
     --hero-min-height: {{ section.settings.hero_height }}px;
+    --hero-footer-height: {{ section.settings.footer_bar_height }}px;
+    --hero-heading-size: {{ section.settings.heading_size }}px;
+    --hero-description-size: {{ section.settings.description_size }}px;
+    --hero-button-width: {{ section.settings.button_width }}px;
+    --hero-button-height: {{ section.settings.button_height }}px;
+    --hero-footer-bg: {{ section.settings.footer_bar_background }};
+    --hero-footer-text-size: {{ section.settings.footer_bar_text_size }}px;
     --hero-content-width: {{ section.settings.content_max_width }}px;
     --hero-content-top: {{ section.settings.content_top_padding }}px;
     --hero-content-bottom: {{ section.settings.content_bottom_padding }}px;
@@ -197,9 +204,9 @@
     margin: 0 0 28px;
     color: var(--hero-heading-color);
     font-family: Arial, Helvetica, sans-serif;
-    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-size: var(--hero-heading-size);
     line-height: 0.98;
-    font-weight: 400;
+    font-weight: 500;
     letter-spacing: -0.04em;
   }
 
@@ -207,8 +214,9 @@
     margin: 0 0 34px;
     color: var(--hero-text-color);
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 1.125rem;
+    font-size: var(--hero-description-size);
     line-height: 1.55;
+    font-weight: 400;
     max-width: 32rem;
   }
 
@@ -225,7 +233,9 @@
     display: inline-flex;
     align-items: center;
     gap: 18px;
-    min-height: 54px;
+    width: var(--hero-button-width);
+    min-height: var(--hero-button-height);
+    justify-content: space-between;
     padding: 0 26px;
     overflow: hidden;
     border: 0;
@@ -294,14 +304,18 @@
     z-index: 1;
     transform: translateX(-50%);
     width: 100%;
-    padding: 10px 18px;
+    min-height: var(--hero-footer-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
     color: var(--hero-note-color);
-    background: rgba(255, 255, 255, 0.92);
+    background: var(--hero-footer-bg);
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 0.75rem;
+    font-size: var(--hero-footer-text-size);
     line-height: 1.2;
   }
 
@@ -458,7 +472,7 @@
       "max": 900,
       "step": 10,
       "unit": "px",
-      "default": 680
+      "default": 780
     },
     {
       "type": "range",
@@ -469,6 +483,56 @@
       "step": 10,
       "unit": "px",
       "default": 520
+    },
+    {
+      "type": "range",
+      "id": "footer_bar_height",
+      "label": "Footer bar height",
+      "min": 24,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Desktop heading size",
+      "min": 32,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Desktop description size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "button_width",
+      "label": "Button width",
+      "min": 120,
+      "max": 320,
+      "step": 1,
+      "unit": "px",
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "button_height",
+      "label": "Button height",
+      "min": 36,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 50
     },
     {
       "type": "range",
@@ -609,6 +673,22 @@
       "id": "note_color",
       "label": "Footer note color",
       "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "footer_bar_background",
+      "label": "Footer bar background",
+      "default": "#F5F5F5"
+    },
+    {
+      "type": "range",
+      "id": "footer_bar_text_size",
+      "label": "Footer bar text size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
     },
     {
       "type": "range",
