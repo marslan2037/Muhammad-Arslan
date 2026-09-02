@@ -91,6 +91,43 @@
         "padding-block-end": 72
       }
     },
+    "custom_hero": {
+      "type": "custom-hero",
+      "settings": {
+        "heading": "The Gift Guide",
+        "description": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.</p>",
+        "button_label": "SHOP NOW",
+        "button_link": "shopify://collections/all",
+        "footer_note": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL",
+        "desktop_image_position_x": 50,
+        "desktop_image_position_y": 50,
+        "mobile_image_position_x": 50,
+        "mobile_image_position_y": 50,
+        "hero_height": 640,
+        "mobile_hero_height": 520,
+        "content_max_width": 540,
+        "content_top_padding": 48,
+        "content_bottom_padding": 118,
+        "content_left_padding": 48,
+        "content_right_padding": 48,
+        "mobile_content_top_padding": 24,
+        "mobile_content_bottom_padding": 72,
+        "mobile_content_side_padding": 20,
+        "section_background": "#f4f1ec",
+        "content_background": "#ffffff",
+        "content_background_opacity": 0,
+        "content_border_color": "#000000",
+        "content_border_opacity": 0,
+        "heading_color": "#000000",
+        "text_color": "#111111",
+        "note_color": "#111111",
+        "overlay_opacity": 0,
+        "button_background": "#000000",
+        "button_text_color": "#ffffff",
+        "button_hover_background": "#ffffff",
+        "button_hover_text_color": "#000000"
+      }
+    },
     "product_list_fa6P9H": {
       "type": "product-list",
       "blocks": {
@@ -279,7 +316,7 @@
     }
   },
   "order": [
-    "hero_jVaWmY",
+    "custom_hero",
     "product_list_fa6P9H"
   ]
 }
