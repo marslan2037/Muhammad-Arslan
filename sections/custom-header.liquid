@@ -1,0 +1,464 @@
+{% liquid
+  assign logo = section.settings.logo
+  assign announcement_text = section.settings.announcement_text
+  assign button_text = section.settings.button_text
+  assign button_url = section.settings.button_url
+%}
+
+<section
+  id="tisso-header-{{ section.id }}"
+  class="tisso-header"
+  style="
+    --header-height: {{ section.settings.header_height }}px;
+    --header-padding: {{ section.settings.horizontal_padding }}px;
+    --logo-width: {{ section.settings.logo_width }}px;
+
+    --header-bg: {{ section.settings.header_bg }};
+    --text-color: {{ section.settings.text_color }};
+
+    --button-bg: {{ section.settings.button_bg }};
+    --button-text: {{ section.settings.button_text_color }};
+
+    --button-hover-bg: {{ section.settings.button_hover_bg }};
+    --button-hover-text: {{ section.settings.button_hover_text }};
+
+    --button-width: {{ section.settings.button_width }}px;
+  "
+>
+  <div class="tisso-header__inner">
+
+    <!-- LOGO -->
+    <div class="tisso-header__logo">
+      {% if logo != blank %}
+        <a href="{{ routes.root_url }}" class="tisso-header__logo-link">
+          {{
+            logo
+            | image_url: width: 500
+            | image_tag:
+              widths: '200, 300, 400, 500',
+              loading: 'eager',
+              class: 'tisso-header__logo-image',
+              alt: logo.alt | default: shop.name
+          }}
+        </a>
+      {% else %}
+        <a href="{{ routes.root_url }}" class="tisso-header__text-logo">
+          TISSO VISION
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- CENTER TEXT -->
+    <div class="tisso-header__message">
+      {{ announcement_text }}
+    </div>
+
+    <!-- BUTTON -->
+    <div class="tisso-header__action">
+      {% if button_url != blank %}
+        <a
+          href="{{ button_url }}"
+          class="tisso-header__button"
+        >
+          <span class="tisso-header__button-text">
+            {{ button_text }}
+          </span>
+
+          <span class="tisso-header__button-arrow" aria-hidden="true">
+            →
+          </span>
+        </a>
+      {% else %}
+        <button
+          type="button"
+          class="tisso-header__button"
+        >
+          <span class="tisso-header__button-text">
+            {{ button_text }}
+          </span>
+
+          <span class="tisso-header__button-arrow" aria-hidden="true">
+            →
+          </span>
+        </button>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+<style>
+  #tisso-header-{{ section.id }} {
+    width: 100%;
+    height: var(--header-height);
+    background: var(--header-bg);
+    color: var(--text-color);
+    position: relative;
+    z-index: 100;
+  }
+
+  #tisso-header-{{ section.id }} *,
+  #tisso-header-{{ section.id }} *::before,
+  #tisso-header-{{ section.id }} *::after {
+    box-sizing: border-box;
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__inner {
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+
+    padding: 0 var(--header-padding);
+  }
+
+  /* =========================
+     LOGO
+  ========================= */
+
+  #tisso-header-{{ section.id }} .tisso-header__logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__logo-link {
+    display: inline-flex;
+    align-items: center;
+
+    text-decoration: none;
+    color: inherit;
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__logo-image {
+    display: block;
+    width: var(--logo-width);
+    height: auto;
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__text-logo {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+
+    color: var(--text-color);
+    text-decoration: none;
+  }
+
+  /* =========================
+     CENTER MESSAGE
+  ========================= */
+
+  #tisso-header-{{ section.id }} .tisso-header__message {
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 400;
+
+    text-align: center;
+    white-space: nowrap;
+
+    color: var(--text-color);
+  }
+
+  /* =========================
+     BUTTON CONTAINER
+  ========================= */
+
+  #tisso-header-{{ section.id }} .tisso-header__action {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  /* =========================
+     BUTTON
+  ========================= */
+
+  #tisso-header-{{ section.id }} .tisso-header__button {
+    position: relative;
+
+    width: var(--button-width);
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 14px 0 18px;
+
+    overflow: hidden;
+
+    border: 0;
+    border-radius: 0;
+
+    background: var(--button-bg);
+    color: var(--button-text);
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+
+    text-decoration: none;
+    cursor: pointer;
+
+    isolation: isolate;
+  }
+
+  /*
+    Animated background layer.
+
+    Starts completely outside the left side.
+    On hover it moves from left → right.
+  */
+  #tisso-header-{{ section.id }} .tisso-header__button::before {
+    content: "";
+
+    position: absolute;
+    z-index: -1;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: var(--button-hover-bg);
+
+    transform: translateX(-100%);
+
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__button:hover::before {
+    transform: translateX(0);
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__button-text,
+  #tisso-header-{{ section.id }} .tisso-header__button-arrow {
+    position: relative;
+    z-index: 2;
+
+    transition:
+      color 0.25s ease,
+      transform 0.35s ease;
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__button-text {
+    color: var(--button-text);
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__button-arrow {
+    color: var(--button-text);
+
+    font-size: 20px;
+    line-height: 1;
+    font-weight: 300;
+
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /*
+    Text + arrow become white
+  */
+  #tisso-header-{{ section.id }} .tisso-header__button:hover .tisso-header__button-text,
+  #tisso-header-{{ section.id }} .tisso-header__button:hover .tisso-header__button-arrow {
+    color: var(--button-hover-text);
+  }
+
+  /*
+    Small arrow movement on hover
+  */
+  #tisso-header-{{ section.id }} .tisso-header__button:hover .tisso-header__button-arrow {
+    transform: translateX(3px);
+  }
+
+  /* =========================
+     MOBILE
+  ========================= */
+
+  @media screen and (max-width: 749px) {
+
+    #tisso-header-{{ section.id }} {
+      height: auto;
+      min-height: var(--header-height);
+    }
+
+    #tisso-header-{{ section.id }} .tisso-header__inner {
+      min-height: var(--header-height);
+
+      grid-template-columns: auto 1fr auto;
+
+      padding-left: 12px;
+      padding-right: 12px;
+      gap: 12px;
+    }
+
+    #tisso-header-{{ section.id }} .tisso-header__message {
+      font-size: 10px;
+      white-space: normal;
+      line-height: 1.2;
+    }
+
+    #tisso-header-{{ section.id }} .tisso-header__text-logo {
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    #tisso-header-{{ section.id }} .tisso-header__logo-image {
+      width: min(var(--logo-width), 110px);
+    }
+
+    #tisso-header-{{ section.id }} .tisso-header__button {
+      width: auto;
+      min-width: 110px;
+      height: 32px;
+
+      padding-left: 12px;
+      padding-right: 10px;
+
+      font-size: 10px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Tisso Header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo width",
+      "min": 60,
+      "max": 250,
+      "step": 5,
+      "unit": "px",
+      "default": 120
+    },
+
+    {
+      "type": "header",
+      "content": "Message"
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Message",
+      "default": "Find the ideal gift for your loved ones."
+    },
+
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "CHOOSE GIFT"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "range",
+      "id": "button_width",
+      "label": "Button width",
+      "min": 100,
+      "max": 250,
+      "step": 5,
+      "unit": "px",
+      "default": 145
+    },
+
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "header_height",
+      "label": "Header height",
+      "min": 40,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "horizontal_padding",
+      "label": "Horizontal padding",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "header_bg",
+      "label": "Header background",
+      "default": "#F5F5F5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#FFF200"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button hover background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button hover text",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tisso Header"
+    }
+  ]
+}
+{% endschema %}
