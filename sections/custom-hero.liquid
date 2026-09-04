@@ -203,7 +203,7 @@
     width: 100%;
     background: var(--hero-card-bg);
     border: 1px solid var(--hero-card-border);
-    padding: 0;
+    padding-inline: 22px;
   }
 
   #custom-hero-{{ section.id }} .custom-hero__heading {
@@ -239,7 +239,7 @@
     display: inline-grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    width: var(--hero-button-width);
+    min-width: var(--hero-button-width);
     min-height: var(--hero-button-height);
     padding: 0;
     overflow: hidden;
@@ -386,7 +386,7 @@
     }
 
     #custom-hero-{{ section.id }} .custom-hero__button {
-      width: 120px;
+      min-width: 120px;
       min-height: 34px;
       font-size: 9px;
     }
