@@ -331,32 +331,35 @@
     #custom-hero-{{ section.id }} .custom-hero__content-wrap {
       min-height: {{ section.settings.mobile_hero_height }}px;
       padding:
-        {{ section.settings.mobile_content_top_padding }}px
+        30px
         {{ section.settings.mobile_content_side_padding }}px
-        {{ section.settings.mobile_content_bottom_padding }}px;
-      align-items: flex-end;
+        28px;
+      align-items: flex-start;
+      text-align: center;
     }
 
     #custom-hero-{{ section.id }} .custom-hero__content {
       max-width: 100%;
+      margin: 0 auto;
     }
 
     #custom-hero-{{ section.id }} .custom-hero__heading {
       margin-bottom: 18px;
-      font-size: clamp(2.125rem, 12vw, 3rem);
+      font-size: 20px;
     }
 
     #custom-hero-{{ section.id }} .custom-hero__description {
       margin-bottom: 26px;
-      font-size: 1rem;
-      line-height: 1.45;
+      font-size: 10px;
+      line-height: 1.25;
     }
 
     #custom-hero-{{ section.id }} .custom-hero__button {
-      min-height: 50px;
-      padding-inline: 20px;
-      gap: 14px;
-      font-size: 0.75rem;
+      width: 120px;
+      min-height: 34px;
+      padding-inline: 13px;
+      gap: 8px;
+      font-size: 9px;
     }
 
     #custom-hero-{{ section.id }} .custom-hero__footer-note {
@@ -365,6 +368,9 @@
       bottom: auto;
       transform: none;
       margin-top: -1px;
+      min-height: 22px;
+      padding: 0 8px;
+      font-size: 9px;
     }
   }
 </style>
@@ -478,7 +484,7 @@
       "type": "range",
       "id": "mobile_hero_height",
       "label": "Mobile hero height",
-      "min": 320,
+      "min": 240,
       "max": 800,
       "step": 10,
       "unit": "px",
@@ -716,7 +722,7 @@
       "type": "color",
       "id": "button_hover_background",
       "label": "Button hover background",
-      "default": "#ffffff"
+      "default": "#FFF200"
     },
     {
       "type": "color",
