@@ -144,7 +144,9 @@
                               <option value="{{ value | escape }}"{% if value == first_variant.options[option_index] %} selected{% endif %}>{{ value }}</option>
                             {% endfor %}
                           </select>
-                          <span aria-hidden="true">⌄</span>
+                          <span aria-hidden="true" class="custom-product-showcase__select-icon">
+                            <img src="{{ 'angle-down.svg' | asset_url }}" width="15" height="9" alt="">
+                          </span>
                         </span>
                       </label>
                     {% endunless %}
@@ -285,10 +287,12 @@
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value + .custom-product-showcase__color-value { border-left: 0; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value.is-selected { background: #000; color: #fff; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap { position: relative; display: block; }
-  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap::before { position: absolute; z-index: 1; top: 0; right: 54px; bottom: 0; width: 1px; content: ''; background: #777; pointer-events: none; }
-  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap select { width: 100%; min-height: 41px; padding: 0 58px 0 14px; appearance: none; outline: none; border: 1px solid #777; border-radius: 0; background: #fff; color: #111; font: 400 1rem/1 'Jost', Arial, sans-serif; text-align: center; text-align-last: center; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap::before { position: absolute; z-index: 1; top: 0; right: 56px; bottom: 0; width: 1px; content: ''; background: #777; pointer-events: none; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap select { width: 100%; min-height: 41px; padding: 0 60px 0 14px; appearance: none; outline: none; border: 1px solid #777; border-radius: 0; background: #fff; color: #111; font: 400 1rem/1 'Jost', Arial, sans-serif; text-align: center; text-align-last: center; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap select:focus { outline: none; }
-  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap > span { position: absolute; z-index: 2; top: 50%; right: 17px; transform: translateY(-50%); font: 400 25px/1 Arial, sans-serif; pointer-events: none; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-icon { position: absolute; z-index: 2; top: 0; right: 0; display: flex; width: 56px; height: 100%; align-items: center; justify-content: center; pointer-events: none; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-icon img { display: block; transition: transform .2s ease; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap.is-open .custom-product-showcase__select-icon img { transform: rotate(180deg); }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__status { min-height: 1.2em; margin: 22px 0 8px; color: #b00020; font: 400 .8rem/1.2 Arial, sans-serif; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button { position: relative; display: flex; width: 100%; min-height: 45px; align-items: center; justify-content: center; gap: 42px; overflow: hidden; border: 0; background: #000; color: #fff; font: 400 1rem/1 'Jost', Arial, sans-serif; cursor: pointer; isolation: isolate; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button::before { position: absolute; z-index: -1; inset: 0; content: ''; background: var(--showcase-button-hover); transform: translateX(-100%); transition: transform .45s cubic-bezier(.65, 0, .35, 1); }
@@ -373,7 +377,21 @@
     });
 
     section.addEventListener('change', (event) => {
-      if (event.target.matches('[data-showcase-select]')) updateVariant(event.target.closest('[data-showcase-product]'));
+      if (event.target.matches('[data-showcase-select]')) {
+        event.target.closest('.custom-product-showcase__select-wrap')?.classList.remove('is-open');
+        updateVariant(event.target.closest('[data-showcase-product]'));
+      }
+    });
+
+    section.addEventListener('pointerdown', (event) => {
+      const select = event.target.closest('[data-showcase-select]');
+      if (select) select.closest('.custom-product-showcase__select-wrap')?.classList.add('is-open');
+    });
+
+    section.addEventListener('focusout', (event) => {
+      if (event.target.matches('[data-showcase-select]')) {
+        event.target.closest('.custom-product-showcase__select-wrap')?.classList.remove('is-open');
+      }
     });
 
     section.addEventListener('submit', async (event) => {
