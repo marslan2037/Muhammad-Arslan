@@ -228,11 +228,10 @@
     width: var(--button-width);
     height: 44px;
 
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    justify-content: space-between;
-
-    padding: 0 14px 0 18px;
+    padding: 0;
 
     overflow: hidden;
 
@@ -292,14 +291,18 @@
   }
 
   #tisso-header-{{ section.id }} .tisso-header__button-text {
+    grid-column: 2;
     color: var(--button-text);
   }
 
   #tisso-header-{{ section.id }} .tisso-header__button-arrow {
     color: var(--button-text);
     display: grid;
+    grid-column: 3;
+    justify-self: start;
     width: 27px;
     height: 12px;
+    margin-left: 28px;
     place-items: center;
   }
 

@@ -236,13 +236,12 @@
 
   #custom-hero-{{ section.id }} .custom-hero__button {
     position: relative;
-    display: inline-flex;
+    display: inline-grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    gap: 18px;
     width: var(--hero-button-width);
     min-height: var(--hero-button-height);
-    justify-content: space-between;
-    padding: 0 26px;
+    padding: 0;
     overflow: hidden;
     border: 0;
     background: var(--hero-button-bg);
@@ -280,6 +279,10 @@
       transform 0.35s ease;
   }
 
+  #custom-hero-{{ section.id }} .custom-hero__button-text {
+    grid-column: 2;
+  }
+
   #custom-hero-{{ section.id }} .custom-hero__button-text,
   #custom-hero-{{ section.id }} .custom-hero__button-arrow {
     color: var(--hero-button-text);
@@ -296,8 +299,11 @@
 
   #custom-hero-{{ section.id }} .custom-hero__button-arrow {
     display: grid;
+    grid-column: 3;
+    justify-self: start;
     width: 27px;
     height: 12px;
+    margin-left: 28px;
     place-items: center;
   }
 
@@ -382,8 +388,6 @@
     #custom-hero-{{ section.id }} .custom-hero__button {
       width: 120px;
       min-height: 34px;
-      padding-inline: 13px;
-      gap: 8px;
       font-size: 9px;
     }
 
