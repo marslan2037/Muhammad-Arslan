@@ -92,11 +92,37 @@
                     <div class="custom-product-showcase__color-values">
                       {% assign color_option_index = color_option.position | minus: 1 %}
                       {% for value in color_option.values %}
+                        {% liquid
+                          assign swatch_color = value.swatch.color
+                          assign color_name = value | downcase
+
+                          if swatch_color == blank
+                            case color_name
+                              when 'white', 'ivory', 'cream'
+                                assign swatch_color = '#ffffff'
+                              when 'black'
+                                assign swatch_color = '#000000'
+                              when 'grey', 'gray'
+                                assign swatch_color = '#808080'
+                              when 'blue', 'navy'
+                                assign swatch_color = '#1d5ca8'
+                              when 'red'
+                                assign swatch_color = '#d32f2f'
+                              when 'green'
+                                assign swatch_color = '#2e7d32'
+                              when 'yellow'
+                                assign swatch_color = '#fff200'
+                              else
+                                assign swatch_color = '#111111'
+                            endcase
+                          endif
+                        %}
                         <button
                           type="button"
                           class="custom-product-showcase__color-value{% if value == first_variant.options[color_option_index] %} is-selected{% endif %}"
                           data-showcase-option="{{ color_option_index }}"
                           data-showcase-value="{{ value | escape }}"
+                          style="--showcase-swatch-color: {{ swatch_color }};"
                           aria-pressed="{% if value == first_variant.options[color_option_index] %}true{% else %}false{% endif %}"
                           >
                             {{ value }}
@@ -254,13 +280,10 @@
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__options, #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-label { display: block; margin: 0 0 14px; padding: 0; border: 0; font: 400 .875rem/1 'Jost', Arial, sans-serif; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__options legend, #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-label > span:first-child { display: block; margin-bottom: 8px; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-values { display: flex; overflow: hidden; background: #fff; }
-  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value { position: relative; z-index: 0; flex: 1; min-height: 41px; margin: 0; overflow: hidden; border: 1px solid #999; background: transparent; color: #111; font: 400 1rem/1 'Jost', Arial, sans-serif; cursor: pointer; isolation: isolate; transition: none; }
-  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value::before { position: absolute; z-index: -1; inset: 0; content: ''; background: #000; transform: translateX(-102%); transition: transform .32s cubic-bezier(.65, 0, .35, 1); }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value { position: relative; flex: 1; min-height: 41px; margin: 0; padding-left: 14px; overflow: hidden; border: 1px solid #999; background: #fff; color: #111; font: 400 1rem/1 'Jost', Arial, sans-serif; text-align: left; cursor: pointer; transition: none; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value::before { position: absolute; top: 0; bottom: 0; left: 0; width: 5px; content: ''; background: var(--showcase-swatch-color); }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value + .custom-product-showcase__color-value { border-left: 0; }
-  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value.is-selected { color: #fff; }
-  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value.is-selected::before { transform: translateX(0); }
-  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value.is-entering-left::before { transform: translateX(102%); }
-  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value.is-exiting-right::before { transform: translateX(102%); }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__color-value.is-selected { background: #000; color: #fff; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap { position: relative; display: block; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap::before { position: absolute; z-index: 1; top: 0; right: 54px; bottom: 0; width: 1px; content: ''; background: #777; pointer-events: none; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__select-wrap select { width: 100%; min-height: 41px; padding: 0 58px 0 14px; appearance: none; outline: none; border: 1px solid #777; border-radius: 0; background: #fff; color: #111; font: 400 1rem/1 'Jost', Arial, sans-serif; text-align: center; text-align-last: center; }
@@ -340,30 +363,12 @@
       if (colorButton) {
         const panel = colorButton.closest('[data-showcase-product]');
         const index = colorButton.dataset.showcaseOption;
-        const buttons = Array.from(panel.querySelectorAll(`.custom-product-showcase__color-value[data-showcase-option="${index}"]`));
-        const previousButton = buttons.find((button) => button.classList.contains('is-selected'));
-
-        if (previousButton === colorButton) return;
-
-        const movingRight = buttons.indexOf(colorButton) > buttons.indexOf(previousButton);
-        if (previousButton) {
-          previousButton.classList.remove('is-selected');
-          previousButton.classList.toggle('is-exiting-right', movingRight);
-          previousButton.setAttribute('aria-pressed', 'false');
-        }
-
-        colorButton.classList.toggle('is-entering-left', !movingRight);
-        colorButton.setAttribute('aria-pressed', 'true');
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            colorButton.classList.add('is-selected');
-            colorButton.classList.remove('is-entering-left');
-            updateVariant(panel);
-          });
+        panel.querySelectorAll(`.custom-product-showcase__color-value[data-showcase-option="${index}"]`).forEach((button) => {
+          const isSelected = button === colorButton;
+          button.classList.toggle('is-selected', isSelected);
+          button.setAttribute('aria-pressed', String(isSelected));
         });
-
-        window.setTimeout(() => previousButton?.classList.remove('is-exiting-right'), 340);
+        updateVariant(panel);
       }
     });
 
