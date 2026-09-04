@@ -109,12 +109,18 @@
               class="custom-hero__button"
             >
               <span class="custom-hero__button-text">{{ section.settings.button_label }}</span>
-              <span aria-hidden="true" class="custom-hero__button-arrow">→</span>
+              <span aria-hidden="true" class="custom-hero__button-arrow">
+                <img class="custom-hero__button-arrow--white" src="{{ 'white-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+                <img class="custom-hero__button-arrow--black" src="{{ 'black-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+              </span>
             </a>
           {% else %}
             <span class="custom-hero__button custom-hero__button--disabled">
               <span class="custom-hero__button-text">{{ section.settings.button_label }}</span>
-              <span aria-hidden="true" class="custom-hero__button-arrow">→</span>
+              <span aria-hidden="true" class="custom-hero__button-arrow">
+                <img class="custom-hero__button-arrow--white" src="{{ 'white-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+                <img class="custom-hero__button-arrow--black" src="{{ 'black-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+              </span>
             </span>
           {% endif %}
         {% endif %}
@@ -289,8 +295,27 @@
   }
 
   #custom-hero-{{ section.id }} .custom-hero__button-arrow {
-    font-size: 1.25rem;
-    line-height: 1;
+    display: grid;
+    width: 27px;
+    height: 12px;
+    place-items: center;
+  }
+
+  #custom-hero-{{ section.id }} .custom-hero__button-arrow img {
+    grid-area: 1 / 1;
+    transition: opacity 0.2s ease;
+  }
+
+  #custom-hero-{{ section.id }} .custom-hero__button-arrow--black {
+    opacity: 0;
+  }
+
+  #custom-hero-{{ section.id }} .custom-hero__button:hover .custom-hero__button-arrow--white {
+    opacity: 0;
+  }
+
+  #custom-hero-{{ section.id }} .custom-hero__button:hover .custom-hero__button-arrow--black {
+    opacity: 1;
   }
 
   #custom-hero-{{ section.id }} .custom-hero__button:hover .custom-hero__button-arrow {
