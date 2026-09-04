@@ -75,7 +75,8 @@
           </span>
 
           <span class="tisso-header__button-arrow" aria-hidden="true">
-            →
+            <img class="tisso-header__button-arrow--black" src="{{ 'black-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+            <img class="tisso-header__button-arrow--white" src="{{ 'white-arrow.svg' | asset_url }}" width="27" height="12" alt="">
           </span>
         </a>
       {% else %}
@@ -88,7 +89,8 @@
           </span>
 
           <span class="tisso-header__button-arrow" aria-hidden="true">
-            →
+            <img class="tisso-header__button-arrow--black" src="{{ 'black-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+            <img class="tisso-header__button-arrow--white" src="{{ 'white-arrow.svg' | asset_url }}" width="27" height="12" alt="">
           </span>
         </button>
       {% endif %}
@@ -105,12 +107,18 @@
     {% if button_url != blank %}
       <a href="{{ button_url }}" class="tisso-header__button tisso-header__mobile-button">
         <span class="tisso-header__button-text">{{ button_text }}</span>
-        <span class="tisso-header__button-arrow" aria-hidden="true">→</span>
+        <span class="tisso-header__button-arrow" aria-hidden="true">
+          <img class="tisso-header__button-arrow--black" src="{{ 'black-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+          <img class="tisso-header__button-arrow--white" src="{{ 'white-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+        </span>
       </a>
     {% else %}
       <button type="button" class="tisso-header__button tisso-header__mobile-button">
         <span class="tisso-header__button-text">{{ button_text }}</span>
-        <span class="tisso-header__button-arrow" aria-hidden="true">→</span>
+        <span class="tisso-header__button-arrow" aria-hidden="true">
+          <img class="tisso-header__button-arrow--black" src="{{ 'black-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+          <img class="tisso-header__button-arrow--white" src="{{ 'white-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+        </span>
       </button>
     {% endif %}
   </div>
@@ -289,13 +297,27 @@
 
   #tisso-header-{{ section.id }} .tisso-header__button-arrow {
     color: var(--button-text);
+    display: grid;
+    width: 27px;
+    height: 12px;
+    place-items: center;
+  }
 
-    font-size: 20px;
-    line-height: 1;
-    font-weight: 300;
+  #tisso-header-{{ section.id }} .tisso-header__button-arrow img {
+    grid-area: 1 / 1;
+    transition: opacity 0.2s ease;
+  }
 
-    display: inline-flex;
-    align-items: center;
+  #tisso-header-{{ section.id }} .tisso-header__button-arrow--white {
+    opacity: 0;
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__button:hover .tisso-header__button-arrow--black {
+    opacity: 0;
+  }
+
+  #tisso-header-{{ section.id }} .tisso-header__button:hover .tisso-header__button-arrow--white {
+    opacity: 1;
   }
 
   /*

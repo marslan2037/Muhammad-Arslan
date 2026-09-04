@@ -155,7 +155,10 @@
                   <p class="custom-product-showcase__status" data-showcase-status aria-live="polite"></p>
                   <button type="submit" class="custom-product-showcase__add-button" data-showcase-submit{% unless first_variant.available %} disabled{% endunless %}>
                     <span class="custom-product-showcase__add-button-text">{% if first_variant.available %}ADD TO CART{% else %}SOLD OUT{% endif %}</span>
-                    <span aria-hidden="true" class="custom-product-showcase__add-button-arrow">→</span>
+                    <span aria-hidden="true" class="custom-product-showcase__add-button-arrow">
+                      <img class="custom-product-showcase__add-button-arrow--white" src="{{ 'white-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+                      <img class="custom-product-showcase__add-button-arrow--black" src="{{ 'black-arrow.svg' | asset_url }}" width="27" height="12" alt="">
+                    </span>
                   </button>
                 </form>
               </div>
@@ -301,7 +304,12 @@
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button::before { position: absolute; z-index: -1; inset: 0; content: ''; background: var(--showcase-button-hover); transform: translateX(-100%); transition: transform .45s cubic-bezier(.65, 0, .35, 1); }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:hover::before { transform: translateX(0); }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button-text, #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button-arrow { position: relative; z-index: 1; transition: color .25s ease, transform .35s ease; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button-arrow { display: grid; width: 27px; height: 12px; place-items: center; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button-arrow img { grid-area: 1 / 1; transition: opacity .2s ease; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button-arrow--black { opacity: 0; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:hover { color: #111; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:hover .custom-product-showcase__add-button-arrow--white { opacity: 0; }
+  #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:hover .custom-product-showcase__add-button-arrow--black { opacity: 1; }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:hover .custom-product-showcase__add-button-arrow { transform: translateX(3px); }
   #custom-product-showcase-{{ section.id }} .custom-product-showcase__add-button:disabled { cursor: not-allowed; opacity: .55; }
 
